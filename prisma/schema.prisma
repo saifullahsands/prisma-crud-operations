@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  
 }
 
 datasource db {
@@ -15,54 +15,56 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   username  String
-  email     String   @unique
-  createdAt DateTime
-  updatedAt DateTime
+  email     String    @unique
+  otp       Int?      @default(0)
+  otpExpiry DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   Posts     Post[]
-  Likes Like[]
-  Comments Comment[]
+  Likes     Like[]
+  Comments  Comment[]
 }
 
 model Post {
-  id        Int       @id @default(autoincrement())
+  id        Int          @id @default(autoincrement())
   userId    Int
   caption   String
-  createdAt DateTime
-  updatedAt DateTime
-  User      User      @relation(fields: [userId], references: [id])
-  PostUrl   PostUrl[]
-  Likes   Like[]
-  Comments Comment[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  User      User         @relation(fields: [userId], references: [id])
+  PostImage PostImages[]
+  Likes     Like[]
+  Comments  Comment[]
 }
 
-model PostUrl {
+model PostImages {
   id        Int      @id @default(autoincrement())
   urls      String
   postId    Int
   Post      Post     @relation(fields: [postId], references: [id])
-  createdAt DateTime
-  updatedAt DateTime
-}
-
-model Like{
-  id Int @id @default(autoincrement())
-  userId Int
-  postId Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  User User @relation(fields: [userId],references: [id])
-  Post Post @relation(fields: [postId],references: [id])
 }
 
-model Comment{
-   id Int @id @default(autoincrement())
-   content String
-   userId  Int
-   postId Int 
-   User User @relation(fields: [userId],references: [id])
-   Post Post @relation(fields: [postId],references: [id])
-   createdAt DateTime @default(now())
+model Like {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  postId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User     @relation(fields: [userId], references: [id])
+  Post      Post     @relation(fields: [postId], references: [id])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  userId    Int
+  postId    Int
+  User      User     @relation(fields: [userId], references: [id])
+  Post      Post     @relation(fields: [postId], references: [id])
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
