@@ -18,6 +18,7 @@ model User {
   id        Int       @id @default(autoincrement())
   username  String
   email     String    @unique
+  password  String
   otp       Int?      @default(0)
   otpExpiry DateTime?
   createdAt DateTime  @default(now())
@@ -25,6 +26,8 @@ model User {
   Posts     Post[]
   Likes     Like[]
   Comments  Comment[]
+
+@@index([email])
 }
 
 model Post {
@@ -34,12 +37,12 @@ model Post {
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
   User      User         @relation(fields: [userId], references: [id])
-  PostImage PostImages[]
+  PostImages PostImage[]
   Likes     Like[]
   Comments  Comment[]
 }
 
-model PostImages {
+model PostImage {
   id        Int      @id @default(autoincrement())
   urls      String
   postId    Int
@@ -68,3 +71,5 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+
