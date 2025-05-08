@@ -66,6 +66,8 @@ const deletePost=async(req,res,next)=>{
     }
 }
 
+
+
 const updatePost=async(req,res,next)=>{
     try {
         const {caption}=req.body;
