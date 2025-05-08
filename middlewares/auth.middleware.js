@@ -25,7 +25,9 @@ const authenticated = async (req, res, next) => {
         next()
     } catch (error) {
         if (error instanceof JWT.JsonWebTokenError){
+            console.log(error.message)
             throw new unAuthorizedError("json web token error occured")
+
         }
         else{
             console.log(`error in authentication middleware :: ${error.message}`)
