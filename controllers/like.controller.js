@@ -8,7 +8,7 @@ const toggleLike = async (req, res, next) => {
         const ExistingLike = await prisma.like.findFirst({
             where: {
                 userId: UserId,
-                postId: parseInt(id)
+                postId:parseInt(id)
             }
         })
         if (ExistingLike) {
@@ -23,7 +23,7 @@ const toggleLike = async (req, res, next) => {
             const Liked = await prisma.like.create({
                 data: {
                     userId: UserId,
-                    postId: id
+                    postId: parseInt(id)
                 }
             })
             return okResponse(res, 200, "post liked successfully", Liked)
@@ -36,11 +36,11 @@ const toggleLike = async (req, res, next) => {
 
 const getAllLike = async (req, res, next) => {
     try {
-        const { id } = req.params;
+       
         const UserId = req.user?.id
         const AllLike = await prisma.like.findMany({
             where: {
-                postId: id,
+              
                 userId: UserId
             },
             include: {
