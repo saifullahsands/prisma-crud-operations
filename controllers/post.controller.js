@@ -1,7 +1,5 @@
-const prisma = require("../utils/helper/prisma.client");
-const { handleS3Upload }=require("../utils/helper/s3Upload")
 const {BadRequestError }=require("../customError")
-const { okResponse}=require("../utils/helper/handlerError")
+const { okResponse,handleS3Upload,prisma }=require("../utils/index")
 
 
 
@@ -47,14 +45,21 @@ const deletePost=async(req,res,next)=>{
     try {
         const{id}=req.params
         const UserId=req.user?.id
-    const deletepost=  await prisma.post.delete({
+    const deletepost =  await prisma.post.findFirst({
             where:{
                 userId:UserId,
                 id:parseInt(id)
             }
         }) 
-
-        okResponse(res,200,`post delete successfully`,deletepost)
+        if(!deletepost){
+            throw new BadRequestError("sorry you are not deleted this post")
+        }
+        await prisma.post.delete({
+            where:{
+                id:deletepost.id
+            }
+        })
+        okResponse(res,200,`post delete successfully`)
     } catch (error) {
         console.log(`error in delete post :: ${error}`)
         next(error)

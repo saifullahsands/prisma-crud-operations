@@ -1,10 +1,7 @@
 const prisma = require("../utils/helper/prisma.client")
 const { BadRequestError } = require("../customError")
-const { HashUserPassword, isPasswordCorrect } = require("../utils/helper/hashingPassword")
-const { generateToken } = require("../utils/helper/token")
-const { okResponse } = require("../utils/helper/handlerError")
-const { smtpServer } = require("../utils/helper/sendEmail")
-const generateOtp = require("../utils/helper/generateOtp")
+const { smtpServer ,okResponse,generateToken,HashUserPassword,generateOtp, isPasswordCorrect } = require("../utils/index")
+
 
 
 const registerUser = async (req, res, next) => {

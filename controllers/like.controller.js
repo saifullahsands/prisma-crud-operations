@@ -1,5 +1,4 @@
-const { okResponse } = require("../utils/helper/handlerError");
-const prisma = require("../utils/helper/prisma.client");
+const {prisma,okResponse} = require("../utils/index");
 
 const toggleLike = async (req, res, next) => {
     try {

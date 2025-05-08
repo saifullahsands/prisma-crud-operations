@@ -1,5 +1,5 @@
-const prisma = require("../utils/helper/prisma.client")
-const { okResponse}=require("../utils/helper/handlerError")
+const { BadRequestError } = require("../customError");
+const { okResponse,prisma}=require("../utils/index")
 
 
 const createComment=async(req,res,next)=>{
@@ -80,6 +80,9 @@ const getAllComment=async(req,res,next)=>{
                 }
             }
         })
+        if(!getAllComments || getAllComments.length===0){
+            throw new BadRequestError("comment is null value")
+        }
         okResponse(res,200,"get all comment retrieve successfully",getAllComments)
     } catch (error) {
         console.log(`error in get all comment :: ${error.message}`)

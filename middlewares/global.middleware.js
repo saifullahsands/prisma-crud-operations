@@ -1,4 +1,4 @@
-const { handleError } = require("../utils/helper/handlerError")
+const { handleError } = require("../utils/index")
 
 const globalMiddleware = (err, req, res, next) => {
     const message = err.message ?? "Something went wrong"

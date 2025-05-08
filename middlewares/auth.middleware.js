@@ -1,7 +1,7 @@
 const JWT = require("jsonwebtoken")
 const { TOKEN_SECRET_KEY } = require("../config/env.config")
 const { unAuthorizedError, BadRequestError } = require("../customError")
-const prisma =require("../utils/helper/prisma.client")
+const {prisma} =require("../utils/index")
 
 
 const authenticated = async (req, res, next) => {
