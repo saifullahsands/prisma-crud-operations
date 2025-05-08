@@ -85,7 +85,7 @@ const updatePost=async(req,res,next)=>{
 
 const getAllUserPost=async(req,res,next)=>{
     try {
-      
+        
         const UserId=req.user?.id
         const getPosts=await prisma.post.findMany({
             where:{
@@ -125,7 +125,12 @@ const getAllUserPost=async(req,res,next)=>{
 
 const getAllPosts=async(req,res,next)=>{
     try {
+       const page=parseInt(req.query.page);
+        const perPage=parseInt(req.query.PerPageRecord) || 5;
+        const skip=(page-1) * perPage 
         const allposts=await prisma.post.findMany({
+            skip:skip,
+            take:perPage,
            select:{
             id:true,
             caption:true,
@@ -135,7 +140,9 @@ const getAllPosts=async(req,res,next)=>{
                 }
             },
             PostImages:{
-                select:{urls:true}
+                select:{
+                    urls:true
+                }
             },
             _count:{
                 select:{
@@ -145,11 +152,12 @@ const getAllPosts=async(req,res,next)=>{
             }
            },
            orderBy:{
-            createdAt:"desc"
+            createdAt:"asc"
            }
            
         })
-        okResponse(res,200,"all post retrieve successfully ",allposts)
+        const totalPosts = await prisma.post.count();
+        okResponse(res,200,"all post retrieve successfully ",allposts,{totalPages: Math.ceil(totalPosts / perPage)})
     } catch (error) {
         console.log(`error in all posts :: ${error.message}`)
         next(error)
