@@ -5,7 +5,7 @@ const prisma = require("./helper/prisma.client")
 const { handleS3Upload } = require("./helper/s3Upload")
 const { smtpServer } = require("./helper/sendEmail")
 const { generateToken } = require("./helper/token")
-
+const {pagination }=require("./helper/pagination")
 
 
 
@@ -18,5 +18,6 @@ module.exports = {
     smtpServer,
     generateToken,
     prisma,
-    handleError
+    handleError,
+    pagination
 }

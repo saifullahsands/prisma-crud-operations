@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  
 }
 
 datasource db {
@@ -27,26 +26,32 @@ model User {
   Likes     Like[]
   Comments  Comment[]
 
-@@index([email])
+  Sender   friend[] @relation("Sender")
+  Receiver friend[] @relation("Receiver")
+
+  sentMessages   message[] @relation("MessageSender")
+  recieveMessage message[] @relation("MessageReciever")
+
+  @@index([email, id])
 }
 
 model Post {
-  id        Int          @id @default(autoincrement())
-  userId    Int
-  caption   String
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  User      User         @relation(fields: [userId], references: [id])
+  id         Int         @id @default(autoincrement())
+  userId     Int
+  caption    String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  User       User        @relation(fields: [userId], references: [id])
   PostImages PostImage[]
-  Likes     Like[]
-  Comments  Comment[]
+  Likes      Like[]
+  Comments   Comment[]
 }
 
 model PostImage {
   id        Int      @id @default(autoincrement())
   urls      String
   postId    Int
-  Post      Post     @relation(fields: [postId], references: [id] , onDelete:Cascade)
+  Post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -58,7 +63,7 @@ model Like {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   User      User     @relation(fields: [userId], references: [id])
-  Post      Post     @relation(fields: [postId], references: [id] , onDelete:Cascade)
+  Post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
 model Comment {
@@ -67,9 +72,38 @@ model Comment {
   userId    Int
   postId    Int
   User      User     @relation(fields: [userId], references: [id])
-  Post      Post     @relation(fields: [postId], references: [id] , onDelete:Cascade)
+  Post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+enum FRIENDREQUESTSTATUS {
+  ACCEPTED
+  PENDING
+}
 
+model friend {
+  id         Int                 @id @default(autoincrement())
+  status     FRIENDREQUESTSTATUS @default(PENDING)
+  senderId   Int
+  receiverId Int
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+  Sender     User                @relation(fields: [senderId], references: [id], name: "Sender")
+  Receiver   User                @relation(fields: [receiverId], references: [id], name: "Receiver")
+
+  @@unique([senderId, receiverId])
+}
+
+model message {
+  id        Int      @id @default(autoincrement())
+  content   String
+  senderId  Int
+  reciverId Int
+  sender    User     @relation(fields: [senderId], references: [id], name: "MessageSender")
+  reciver   User     @relation(fields: [reciverId], references: [id], name: "MessageReciever")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([senderId, reciverId])
+}

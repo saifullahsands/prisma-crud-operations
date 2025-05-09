@@ -1,5 +1,5 @@
 const {BadRequestError }=require("../customError")
-const { okResponse,handleS3Upload,prisma }=require("../utils/index")
+const { okResponse,handleS3Upload,prisma, pagination }=require("../utils/index")
 
 
 
@@ -66,8 +66,6 @@ const deletePost=async(req,res,next)=>{
     }
 }
 
-
-
 const updatePost=async(req,res,next)=>{
     try {
         const {caption}=req.body;
@@ -92,7 +90,7 @@ const updatePost=async(req,res,next)=>{
 
 const getAllUserPost=async(req,res,next)=>{
     try {
-        
+       
         const UserId=req.user?.id
         const getPosts=await prisma.post.findMany({
             where:{
@@ -132,9 +130,7 @@ const getAllUserPost=async(req,res,next)=>{
 
 const getAllPosts=async(req,res,next)=>{
     try {
-       const page=parseInt(req.query.page);
-        const perPage=parseInt(req.query.PerPageRecord) || 5;
-        const skip=(page-1) * perPage 
+        const {skip,perPage }=pagination(req)
         const allposts=await prisma.post.findMany({
             skip:skip,
             take:perPage,
@@ -172,11 +168,67 @@ const getAllPosts=async(req,res,next)=>{
 }
 
 
+const searchPost=async(req,res,next)=>{
+    try {
+        const {query}=req.query
+        if(!query){
+            throw new BadRequestError("search query is missing")
+        }
+
+        const result=await prisma.post.findMany({
+            where:{
+                caption:{
+                    contains:query.toLowerCase(),
+                    
+                }
+            },
+            include:{
+                User:{
+                    select:{
+                        username:true
+                    }
+                },
+                PostImages:{
+                    select:{
+                        urls:true
+                    }
+                },
+                Comments:{
+                    select:{
+                        content:true,
+                      User:{
+                        select:{
+                            username:true
+                        }
+                      }
+                    }
+                },
+                _count:{
+                    select:{
+                        Likes:true,
+                        Comments:true
+                    }
+                },
+            
+            }
+        })
+        if(result.length===0){
+            throw new BadRequestError("no result found")
+        }
+        okResponse(res,200,"search post successfully",result)
+    } catch (error) {
+        console.log(`error in search post :: ${error.message}`)
+        next(error)
+    }
+}
 
 module.exports={
     createPost,
     deletePost,
     updatePost,
     getAllUserPost,
-    getAllPosts
+    getAllPosts,
+    searchPost
 }
+
+
